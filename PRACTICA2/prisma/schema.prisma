@@ -1,0 +1,34 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model OrigenIdiomaModel {
+  id            Int           @id @default(autoincrement())
+  nombrepais    String
+  idiomaoficial String
+  idioma IdiomaModel[]
+}
+
+model IdiomaModel {
+  id            Int                  @id @default(autoincrement())
+  nombreidioma  String
+  origenidioma  OrigenIdiomaModel   @relation(fields: [origenId], references: [id])
+  origenId      Int
+  traducciones  TraduccionIdiomaModel[] // Relación uno a muchos
+}
+
+model TraduccionIdiomaModel {
+  idtraduccion        Int     @id @default(autoincrement())
+  numerotraduccion    Int
+  nombretraduccion   String
+  idioma  IdiomaModel  @relation(fields: [ididioma], references: [id])
+  ididioma  Int
+}

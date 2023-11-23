@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model negocioModel {
+  id               Int               @id @default(autoincrement())
+  correoNegocio    String            @unique
+  nombreNegocio    String
+  direccionNegocio String
+  telefonoNegocio  Int
+  totalLibros      Int
+  inventario       inventarioModel[]
+}
+
+model encargadoModel {
+  id                Int               @id @default(autoincrement())
+  correoEncargado   String            @unique
+  nombreEncargado   String
+  telefonoEncargado Int
+  inventario        inventarioModel[]
+}
+
+model inventarioModel {
+  id             Int            @id @default(autoincrement())
+  numeroCopias   Int
+  estado         String
+  precioVenta    Int
+  precioAlquiler Int
+  encargadoId    Int
+  negocioId      Int
+  encargado      encargadoModel @relation(fields: [encargadoId], references: [id])
+  negocio        negocioModel   @relation(fields: [negocioId], references: [id])
+}
+
+
+model libroModel {
+  id                  Int     @id @default(autoincrement())
+  ISBN                Int     @unique
+  nombreLibro         String
+  anopublicacion      Int
+  edicionLibro        String
+  clasificacionLibro  String
+  editorial           editorialModel[]
+  categoria           categoriaModel[]
+}
+
+model editorialModel {
+  id                  Int     @id @default(autoincrement())
+  nombreEditorial     String
+  correoEditorial     String
+  direccionEditorial  String
+  telefonoEditorial   Int
+  libro               libroModel   @relation(fields: [libroId], references: [id])
+  libroId             Int
+}
+
+model categoriaModel {
+  id                  Int     @id @default(autoincrement())
+  nombreCategoria     String
+  CategoriaPrincipal  String?
+  libros              libroModel  @relation(fields: [librosId], references: [id])
+  librosId            Int
+}
+
+
+model autorModel {
+  id              Int      @id @default(autoincrement())
+  cedulautor      String   @unique
+  nombreautor     String
+  correoautor     String
+  generos         generoModel[]    // Relación con el modelo GeneroModel
+  nacionalidad    nacionalidadModel[]   // Relación con el modelo NacionalidadModel
+}
+
+model generoModel {
+  id              Int      @id @default(autoincrement())
+  generoliterario String
+  autor           autorModel   @relation(fields: [AutorId], references: [id])
+  AutorId         Int
+}
+
+model nacionalidadModel {
+  id              Int      @id @default(autoincrement())
+  nombrepais      String
+  nombreciudad    String
+  autor           autorModel   @relation(fields: [AutorId], references: [id])
+  AutorId         Int
+}
+
+
+model origenIdiomaModel {
+  id            Int           @id @default(autoincrement())
+  nombrepais    String
+  idiomaoficial String
+  idioma idiomaModel[]
+}
+
+model idiomaModel {
+  id            Int                  @id @default(autoincrement())
+  nombreidioma  String
+  origenidioma  origenIdiomaModel   @relation(fields: [origenId], references: [id])
+  origenId      Int
+  traducciones  traduccionIdiomaModel[] // Relación uno a muchos
+}
+
+model traduccionIdiomaModel {
+  id          Int     @id @default(autoincrement())
+  numerotraduccion    Int
+  nombretraduccion   String
+  idioma  idiomaModel  @relation(fields: [ididioma], references: [id])
+  ididioma  Int
+}
